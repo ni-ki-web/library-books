@@ -1,4 +1,119 @@
-.body {
-    margin: 0;
+* {
     padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body { 
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; 
+    padding: 1rem; 
+    text-align: center;
+}
+
+.header { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    position: relative; 
+    padding: 0.5rem 1rem;
+}
+
+.header h1 { 
+    margin: 0; 
+    text-align: center; 
+    flex: 1;
+}
+
+#newBookBtn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+#newBookBtn:hover {
+  background: #eee;
+}
+
+#library { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    gap: 20px; 
+    margin-block: 1rem; 
+}
+
+button { 
+    cursor: pointer; 
+    border-radius: 8px; 
+    padding: .5rem .7rem; 
+    border: 1px solid #ccc; 
+    background: #f7f7f7; 
+}
+
+button:hover { 
+    background: #efefef; 
+}
+
+button {
+    transition: all 0.2s ease;
+}
+
+dialog {
+    border: none;
+    border-radius: 10px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: left;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    background-color: #fff;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+dialog::backdrop {
+    background: rgba(0,0,0,0.5);
+}
+
+#bookForm h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+#bookForm label {
+  margin-top: 0.75rem;
+  font-weight: 500;
+  display: flex;         /* flex works for both text + input and checkbox */
+  align-items: center;   /* keep things aligned */
+  gap: 0.5rem;           /* nice spacing */
+}
+
+#bookForm input {
+  width: 100%;
+  padding: 0.4rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#bookForm input[type="checkbox"] {
+  width: auto;
+  margin: 0; 
+  padding: 0;
+}
+
+#formBtns {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
 }
