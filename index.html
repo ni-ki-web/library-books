@@ -3,11 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>My Books Library</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
+    <div class="header">
+        <h1>My Library</h1>
+        <button id="newBookBtn" type="button">+ Add New Book</button>
+    </div>
+
+    <div id="library"></div>
+
+    <dialog id="bookDialog">
+        <form id="bookForm">
+            <h2>New Book</h2>
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required />
+
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author" required />
+
+            <label for="pages">Pages</label>
+            <input type="number" id="pages" name="pages" min="1" step="1" required />
+
+            <label for="genre">Genre</label>
+            <input type="text" id="genre" name="genre" placeholder="e.g., Fantasy, Horror..." required>
+
+            <label for="read"></label>
+            <input type="checkbox" id="read" name="read" /> Read
+
+            <label for="imageUrl">Image URL</label>
+            <input id="imageUrl" name="imageUrl" type="url" placeholder="http://example.com/cover.jpg" />
+
+            <label for="imageFile">Or Upload Image</label>
+            <input type="file" name="imageFile" id="imageFile" accept="image/*">
+
+            <div id="formBtns">
+             <button type="submit">Submit</button>
+             <button type="button" id="cancelFormBtn">Cancel</button>
+            </div>
+        </form>
+    </dialog>
     <script src="script.js"></script>
 </body>
 </html>
