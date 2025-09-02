@@ -112,7 +112,7 @@ function displayBook() {
 
 newBookBtn.addEventListener('click', () => { dialog.showModal(); });
 
-cancelFormBtn.addEventListener("click", () => { dialog.closest(); });
+cancelFormBtn.addEventListener('click', () => { dialog.close(); });
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
