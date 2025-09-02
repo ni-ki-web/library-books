@@ -1,9 +1,13 @@
 const library = document.getElementById("library");
+const newBookBtn = document.getElementById("newBookBtn");
+const dialog = document.getElementById("bookDialog");
+const form = document.getElementById("bookForm");
+const cancelFormBtn = document.getElementById("cancelFormBtn");
 
 const myLibrary = [];
 
 // Book Constructor
-function Book(title, author, pages, genre, read, imageUrl="", imageFile="") {
+function Book(title, author, pages, genre, read, imageUrl="", imageFile=null) {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
@@ -36,7 +40,13 @@ function buildBookCard(book) {
     imgWrapper.className = "book-cover";
 
     const img = document.createElement("img");
-    img.src = book.imageUrl || "assets/placeholder-cover.png";
+    if (book.imageFile) {
+        img.src = URL.createObjectURL(book.imageFile);
+    } else if (book.imageUrl) {
+        img.src = book.imageUrl;
+    } else {
+        img.src = "assets/placeholder-cover.png";
+    }
     img.alt = `${book.title}cover`;
     imgWrapper.appendChild(img);
 
@@ -55,11 +65,29 @@ function buildBookCard(book) {
     genre.className = "book-meta";
     genre.textContent = book.genre;
 
+    // Read status checkbox
+    const readLabel = document.createElement("label");
+    readLabel.className = "book-status";
+
+    const readCheckbox = document.createElement("input");
+    readCheckbox.type = "checkbox";
+    readCheckbox.checked = book.read;
+    readCheckbox.addEventListener("change", () => {
+        book.toggleReadStatus();
+    });
+
+    const readText = document.createElement("span");
+    readText.textContent = "Read";
+
+    readLabel.appendChild(readCheckbox);
+    readLabel.appendChild(readText);
+
     bookCard.appendChild(imgWrapper);
     bookCard.appendChild(title);
     bookCard.appendChild(author);
     bookCard.appendChild(pages);
     bookCard.appendChild(genre);
+    bookCard.appendChild(readLabel);
 
     return bookCard;
 }
@@ -81,6 +109,33 @@ function displayBook() {
     });
     library.appendChild(fragment);
 }
+
+newBookBtn.addEventListener('click', () => { dialog.showModal(); });
+
+cancelFormBtn.addEventListener("click", () => { dialog.closest(); });
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const title = form.title.value.trim();
+    const author = form.author.value.trim();
+    const pages = parseInt(form.pages.value, 10);
+    const genre = form.genre.value.trim();
+    const read = form.read.checked;
+    const imageUrl = form.imageUrl.value.trim();
+    const imageFile = form.imageFile.files[0] || null;
+
+    if (!title || !author || !Number.isFinite(pages) || pages < 1 || !genre) {
+        alert("Please fill out all required fields correctly.");
+        return;
+    }
+
+    addBookToLibrary(title, author, pages, genre, read, imageUrl, imageFile);
+
+    form.reset();
+    dialog.close();
+    displayBook();
+});
 
 // Test with data
 addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", true, "", "");
