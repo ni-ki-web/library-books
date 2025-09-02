@@ -3,7 +3,7 @@ const library = document.getElementById("library");
 const myLibrary = [];
 
 // Book Constructor
-function Book(title, author, pages, genre, read, imageUrl="", imageFile) {
+function Book(title, author, pages, genre, read, imageUrl="", imageFile="") {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
@@ -26,6 +26,7 @@ function addBookToLibrary(title, author, pages, genre, read, imageUrl, imageFile
     return book;
 }
 
+// Create a book card that has all the book details
 function buildBookCard(book) {
     const bookCard = document.createElement("div");
     bookCard.className = "book-card";
@@ -35,7 +36,7 @@ function buildBookCard(book) {
     imgWrapper.className = "book-cover";
 
     const img = document.createElement("img");
-    img.src = book.imageUrl || "assets/placeholder-cover.png" || "https://indigenousreadsrisingcom.b-cdn.net/wp-content/uploads/2023/10/1.png";
+    img.src = book.imageUrl || "assets/placeholder-cover.png";
     img.alt = `${book.title}cover`;
     imgWrapper.appendChild(img);
 
@@ -48,7 +49,7 @@ function buildBookCard(book) {
 
     const pages = document.createElement("p");
     pages.className = "book-meta";
-    pages.textContent = book.pages;
+    pages.textContent = `${book.pages} pages`;
 
     const genre = document.createElement("p");
     genre.className = "book-meta";
@@ -59,8 +60,11 @@ function buildBookCard(book) {
     bookCard.appendChild(author);
     bookCard.appendChild(pages);
     bookCard.appendChild(genre);
+
+    return bookCard;
 }
 
+// Display the book card in the library
 function displayBook() {
     library.textContent = "";
 
@@ -70,4 +74,16 @@ function displayBook() {
         library.appendChild(emptyLibrary);
         return;
     }
+
+    const fragment = document.createDocumentFragment();
+    myLibrary.forEach(book => {
+        fragment.appendChild(buildBookCard(book));
+    });
+    library.appendChild(fragment);
 }
+
+// Test with data
+addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", true, "", "");
+addBookToLibrary("1984", "George Orwell", 328, "Dystopian", false, "", "");
+addBookToLibrary("Never Let Me Go", "Kazuo Ishiguro", 288, "Science-Fiction, Dystopian", true, "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1353048590i/6334.jpg", "");
+displayBook();
