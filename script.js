@@ -79,6 +79,21 @@ function buildBookCard(book) {
     const readText = document.createElement("span");
     readText.textContent = "Read";
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.classList.add("delete-book");
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => {
+        const index = myLibrary.findIndex(currentBook => currentBook.id === book.id);
+        if (index > -1) {
+            myLibrary.splice(index, 1);
+        }
+        bookCard.remove();
+
+        if (myLibrary.length === 0) {
+            displayBook();
+        }
+    });
+
     readLabel.appendChild(readCheckbox);
     readLabel.appendChild(readText);
 
@@ -88,6 +103,7 @@ function buildBookCard(book) {
     bookCard.appendChild(pages);
     bookCard.appendChild(genre);
     bookCard.appendChild(readLabel);
+    bookCard.appendChild(deleteBtn);
 
     return bookCard;
 }
