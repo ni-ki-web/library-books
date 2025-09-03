@@ -45,7 +45,7 @@ function buildBookCard(book) {
     } else if (book.imageUrl) {
         img.src = book.imageUrl;
     } else {
-        img.src = "assets/placeholder-cover.png";
+        img.src = "assets/coverplaceholder.png";
     }
     img.alt = `${book.title}cover`;
     imgWrapper.appendChild(img);
