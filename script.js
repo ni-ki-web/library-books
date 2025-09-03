@@ -7,30 +7,40 @@ const cancelFormBtn = document.getElementById("cancelFormBtn");
 const myLibrary = [];
 
 // Book Constructor
-function Book(title, author, pages, genre, read, imageUrl="", imageFile=null) {
+function Book(title, author, pages, genre, status, imageUrl="", imageFile=null) {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
     this.pages = pages;
     this.genre = genre;
-    this.read = read;
+    this.status = status || "Not Read";
     this.imageUrl = imageUrl;
     this.imageFile = imageFile;
 }
 
-//Toggle Method to switch read status
-Book.prototype.toggleReadStatus = function() {
-    this.read = !this.read;
-}
-
 // Create book objects and add them to the library
-function addBookToLibrary(title, author, pages, genre, read, imageUrl, imageFile) {
-    const book = new Book(title, author, pages, genre, read, imageUrl, imageFile);
+function addBookToLibrary(title, author, pages, genre, status, imageUrl, imageFile) {
+    const book = new Book(title, author, pages, genre, status, imageUrl, imageFile);
     myLibrary.push(book);
     return book;
 }
 
+// helper function to apply dynamic color classes
+function applyStatusClass(selectOption, status) {
+    selectOption.classList.remove("reading", "read", "not-read", "dropped");
+    selectOption.classList.add(status.toLowerCase().replace(" ", "-"));
+}
+
 // Create a book card that has all the book details
+/*
+  div for the book card
+  div to hold the book cover
+  img for the book cover
+  h3 for book title
+  p for author, number of pages, genre
+  dropdown selection for book read status -> option value
+  delete button to remove the book card
+*/
 function buildBookCard(book) {
     const bookCard = document.createElement("div");
     bookCard.className = "book-card";
@@ -47,7 +57,7 @@ function buildBookCard(book) {
     } else {
         img.src = "assets/defaultCover.png";
     }
-    img.alt = `${book.title}cover`;
+    img.alt = `${book.title} cover`;
     imgWrapper.appendChild(img);
 
     const title = document.createElement("h3");
@@ -65,19 +75,25 @@ function buildBookCard(book) {
     genre.className = "book-meta";
     genre.textContent = book.genre;
 
-    // Read status checkbox
-    const readLabel = document.createElement("label");
-    readLabel.className = "book-status";
-
-    const readCheckbox = document.createElement("input");
-    readCheckbox.type = "checkbox";
-    readCheckbox.checked = book.read;
-    readCheckbox.addEventListener("change", () => {
-        book.toggleReadStatus();
+    // status dropdown
+    const selectStatus = document.createElement("select");
+    selectStatus.classList.add("book-status");
+    ["Not Read", "Reading", "Read", "Dropped"].forEach(optionValue => {
+        const option = document.createElement("option");
+        option.value = optionValue;
+        option.textContent = optionValue;
+        if (book.status === optionValue) {
+            option.selected = true;
+        }
+        selectStatus.appendChild(option);
     });
+    
+    applyStatusClass(selectStatus, book.status);
 
-    const readText = document.createElement("span");
-    readText.textContent = "Read";
+    selectStatus.addEventListener("change", () => {
+        book.status = selectStatus.value;
+        applyStatusClass(selectStatus, book.status);
+    });
 
     const deleteBtn = document.createElement("button");
     deleteBtn.classList.add("delete-book");
@@ -94,15 +110,12 @@ function buildBookCard(book) {
         }
     });
 
-    readLabel.appendChild(readCheckbox);
-    readLabel.appendChild(readText);
-
     bookCard.appendChild(imgWrapper);
     bookCard.appendChild(title);
     bookCard.appendChild(author);
     bookCard.appendChild(pages);
     bookCard.appendChild(genre);
-    bookCard.appendChild(readLabel);
+    bookCard.appendChild(selectStatus);
     bookCard.appendChild(deleteBtn);
 
     return bookCard;
@@ -126,9 +139,13 @@ function displayBook() {
     library.appendChild(fragment);
 }
 
-newBookBtn.addEventListener('click', () => { dialog.showModal(); });
+newBookBtn.addEventListener("click", () => { 
+    dialog.showModal(); 
+});
 
-cancelFormBtn.addEventListener('click', () => { dialog.close(); });
+cancelFormBtn.addEventListener("click", () => { 
+    dialog.close(); 
+});
 
 form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -137,7 +154,7 @@ form.addEventListener("submit", (e) => {
     const author = form.author.value.trim();
     const pages = parseInt(form.pages.value, 10);
     const genre = form.genre.value.trim();
-    const read = form.read.checked;
+    const status = form.status.value;
     const imageUrl = form.imageUrl.value.trim();
     const imageFile = form.imageFile.files[0] || null;
 
@@ -146,7 +163,7 @@ form.addEventListener("submit", (e) => {
         return;
     }
 
-    addBookToLibrary(title, author, pages, genre, read, imageUrl, imageFile);
+    addBookToLibrary(title, author, pages, genre, status, imageUrl, imageFile);
 
     form.reset();
     dialog.close();
@@ -154,7 +171,7 @@ form.addEventListener("submit", (e) => {
 });
 
 // Test with data
-addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", true, "", "");
-addBookToLibrary("1984", "George Orwell", 328, "Dystopian", false, "", "");
-addBookToLibrary("Never Let Me Go", "Kazuo Ishiguro", 288, "Science-Fiction, Dystopian", true, "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1353048590i/6334.jpg", "");
+addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", "Read", "", "");
+addBookToLibrary("1984", "George Orwell", 328, "Dystopian", "Not Read", "", "");
+addBookToLibrary("Never Let Me Go", "Kazuo Ishiguro", 288, "Science-Fiction, Dystopian", "Read", "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1353048590i/6334.jpg", "");
 displayBook();
