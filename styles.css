@@ -14,60 +14,24 @@ body {
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  position: relative; 
   padding: 0.5rem 1rem;
   margin-bottom: 2rem;
+  gap: 0.5rem;
 }
 
 .header h1 { 
   margin: 0; 
-  text-align: center; 
   flex: 1;
 }
 
-  #newBookBtn {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+#newBookBtn {
+  font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
-  }
-
-  #newBookBtn:hover {
-  transform: translateY(-50%) scale(1.05);
 }
 
-/* small screen: replace text with just a "+" */
-@media (max-width: 600px) {
-  #newBookBtn {
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 50%;
-    padding: 0;
-    font-size: 0;
-    line-height: 2.2rem; 
-    display: flex;
-    text-align: center;
-    justify-content: center;
-  }
-
-  #newBookBtn:hover {
-    transform: translateY(-50%);
-    background-color: #333;
-  }
-
-  #newBookBtn::before {
-    content: "+"; 
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #333;   
-    transition: color 0.2s ease;    
-  }
-
-  #newBookBtn:hover::before {
-    color: #eee;       
-  }
+#newBookBtn:hover {
+  transform: scale(1.05);
 }
 
 #library { 
@@ -104,13 +68,6 @@ body {
   justify-content: center;
 }
 
-@media (max-width: 600px) {
-  .book-cover {
-    aspect-ratio: 3 / 4;
-    font-size: 0.9rem;
-  }
-}
-
 .book-cover img {
   width: 100%;
   height: 100%;
@@ -130,22 +87,37 @@ body {
 }
 
 .book-status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
   margin-top: 0.5rem;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-.book-status input[type="checkbox"] {
-  margin: 0; 
-  transform: translateY(1px);
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
   cursor: pointer;
 }
 
+.book-status.not-read {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.book-status.reading {
+  background-color: #fff3cd; /* light yellow */
+  color: #856404;
+}
+
+.book-status.read {
+  background-color: #d4edda; /* light green */
+  color: #155724;
+}
+
+.book-status.dropped {
+  background-color: #e2e3e5; /* light gray */
+  color: #413b38;
+}
+
 .delete-book {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   font-size: 0.9rem;
 }
 
@@ -182,38 +154,84 @@ dialog {
 }
 
 dialog::backdrop {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 #bookForm h2 {
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
 }
 
 #bookForm label {
-  margin-top: 0.75rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.3rem;
+  font-size: 1rem;
   font-weight: 500;
   display: flex;     
   align-items: center; 
   gap: 0.5rem;
 }
 
-#bookForm input {
+#bookForm input, #bookForm select {
   width: 100%;
   padding: 0.4rem;
-  margin-top: 0.25rem;
   border: 1px solid #ccc;
   border-radius: 6px;
 }
 
-#bookForm input[type="checkbox"] {
-  width: auto;
-  margin: 0; 
-  padding: 0;
-}
-
 #formBtns {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   display: flex;
   gap: 0.5rem;
+}
+
+/* Styling for smaller screens */
+/* small screen: replace text with just a "+" */
+@media (max-width: 600px) {
+  #newBookBtn {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 0;
+    line-height: 2.2rem; 
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    position: static;
+  }
+
+  #newBookBtn::before {
+    content: "+"; 
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #333;   
+    transition: color 0.2s ease;    
+  }
+
+  #newBookBtn:hover::before {
+    color: #eee;       
+  }
+
+  .book-cover {
+    aspect-ratio: 3 / 4;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    margin-bottom: 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.4rem;
+  }
+
+  #newBookBtn {
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1.8rem; 
+  }
 }
