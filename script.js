@@ -1,143 +1,139 @@
-const library = document.getElementById("library");
+class Book {
+    constructor(title, author, pages, genre, status = "Not Read", imageUrl="", imageFile=null) {
+        this.id = crypto.randomUUID();
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.genre = genre;
+        this.status = status;
+        this.imageUrl = imageUrl;
+        this.imageFile = imageFile;
+    }
+
+    buildBookCard(onDelete, onStatusChange) {
+        const bookCard = document.createElement("div");
+        bookCard.className = "book-card";
+        bookCard.dataset.id = this.id;
+
+        const imgWrapper = document.createElement("div");
+        imgWrapper.className = "book-cover";
+
+        const img = document.createElement("img");
+        if (this.imageFile) {
+            img.src = URL.createObjectURL(this.imageFile);
+        } else if (this.imageUrl) {
+            img.src = this.imageUrl;
+        } else {
+            img.src = "assets/defaultCover.png";
+        }
+        img.alt = `${this.title} cover`;
+        imgWrapper.appendChild(img);
+
+        const title = document.createElement("h3");
+        title.textContent = this.title;
+
+        const author = document.createElement("p");
+        author.className = "book-meta";
+        author.textContent = this.author;
+
+        const pages = document.createElement("p");
+        pages.className = "book-meta";
+        pages.textContent = `${this.pages} pages`;
+
+        const genre = document.createElement("p");
+        genre.className = "book-meta";
+        genre.textContent = this.genre;
+
+        // status dropdown
+        const selectStatus = document.createElement("select");
+        selectStatus.classList.add("book-status");
+        ["Not Read", "Reading", "Read", "Dropped"].forEach(optionValue => {
+            const option = document.createElement("option");
+            option.value = optionValue;
+            option.textContent = optionValue;
+            if (this.status === optionValue) {
+                option.selected = true;
+            }
+            selectStatus.appendChild(option);
+        });
+        
+        this.applyStatusClass(selectStatus);
+
+        selectStatus.addEventListener("change", () => {
+            this.status = selectStatus.value;
+            this.applyStatusClass(selectStatus);
+            if (onStatusChange) onStatusChange(this);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.classList.add("delete-book");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", () => {
+            if (onDelete) onDelete(this);
+            bookCard.remove();
+        });
+
+        bookCard.appendChild(imgWrapper);
+        bookCard.appendChild(title);
+        bookCard.appendChild(author);
+        bookCard.appendChild(pages);
+        bookCard.appendChild(genre);
+        bookCard.appendChild(selectStatus);
+        bookCard.appendChild(deleteBtn);
+
+        return bookCard;
+    }
+
+    applyStatusClass(selectOption) {
+        selectOption.classList.remove("reading", "read", "not-read", "dropped");
+        selectOption.classList.add(this.status.toLowerCase().replace(" ", "-"));
+    }
+}
+
+class Library {
+    constructor(libraryElement) {
+        this.books = [];
+        this.libraryElement = libraryElement;
+    }
+
+    addBook(book) {
+        this.books.push(book);
+        this.displayBook();
+    }
+
+    removeBook(book) {
+        this.books = this.books.filter(b => b.id !== book.id);
+        this.displayBook();
+    }
+
+    displayBook() {
+        this.libraryElement.textContent = "";
+
+        if (this.books.length === 0) {
+            const emptyMsg = document.createElement("p");
+            emptyMsg.textContent = "No book in the library. Add your first one!";
+            this.libraryElement.appendChild(emptyMsg);
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        this.books.forEach(book => {
+            fragment.appendChild(
+                book.buildBookCard(
+                    (bookToDelete) => this.removeBook(bookToDelete), 
+                    () => {} // status change handler if needed
+                )
+            );
+        });
+        this.libraryElement.appendChild(fragment);
+    }
+}
+
+const myLibrary = new Library(document.getElementById("library"));
 const newBookBtn = document.getElementById("newBookBtn");
 const dialog = document.getElementById("bookDialog");
 const form = document.getElementById("bookForm");
 const cancelFormBtn = document.getElementById("cancelFormBtn");
-
-const myLibrary = [];
-
-// Book Constructor
-function Book(title, author, pages, genre, status, imageUrl="", imageFile=null) {
-    this.id = crypto.randomUUID();
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.genre = genre;
-    this.status = status || "Not Read";
-    this.imageUrl = imageUrl;
-    this.imageFile = imageFile;
-}
-
-// Create book objects and add them to the library
-function addBookToLibrary(title, author, pages, genre, status, imageUrl, imageFile) {
-    const book = new Book(title, author, pages, genre, status, imageUrl, imageFile);
-    myLibrary.push(book);
-    return book;
-}
-
-// helper function to apply dynamic color classes
-function applyStatusClass(selectOption, status) {
-    selectOption.classList.remove("reading", "read", "not-read", "dropped");
-    selectOption.classList.add(status.toLowerCase().replace(" ", "-"));
-}
-
-// Create a book card that has all the book details
-/*
-  div for the book card
-  div to hold the book cover
-  img for the book cover
-  h3 for book title
-  p for author, number of pages, genre
-  dropdown selection for book read status -> option value
-  delete button to remove the book card
-*/
-function buildBookCard(book) {
-    const bookCard = document.createElement("div");
-    bookCard.className = "book-card";
-    bookCard.dataset.id = book.id;
-
-    const imgWrapper = document.createElement("div");
-    imgWrapper.className = "book-cover";
-
-    const img = document.createElement("img");
-    if (book.imageFile) {
-        img.src = URL.createObjectURL(book.imageFile);
-    } else if (book.imageUrl) {
-        img.src = book.imageUrl;
-    } else {
-        img.src = "assets/defaultCover.png";
-    }
-    img.alt = `${book.title} cover`;
-    imgWrapper.appendChild(img);
-
-    const title = document.createElement("h3");
-    title.textContent = book.title;
-
-    const author = document.createElement("p");
-    author.className = "book-meta";
-    author.textContent = book.author;
-
-    const pages = document.createElement("p");
-    pages.className = "book-meta";
-    pages.textContent = `${book.pages} pages`;
-
-    const genre = document.createElement("p");
-    genre.className = "book-meta";
-    genre.textContent = book.genre;
-
-    // status dropdown
-    const selectStatus = document.createElement("select");
-    selectStatus.classList.add("book-status");
-    ["Not Read", "Reading", "Read", "Dropped"].forEach(optionValue => {
-        const option = document.createElement("option");
-        option.value = optionValue;
-        option.textContent = optionValue;
-        if (book.status === optionValue) {
-            option.selected = true;
-        }
-        selectStatus.appendChild(option);
-    });
-    
-    applyStatusClass(selectStatus, book.status);
-
-    selectStatus.addEventListener("change", () => {
-        book.status = selectStatus.value;
-        applyStatusClass(selectStatus, book.status);
-    });
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.classList.add("delete-book");
-    deleteBtn.textContent = "Delete";
-    deleteBtn.addEventListener("click", () => {
-        const index = myLibrary.findIndex(currentBook => currentBook.id === book.id);
-        if (index > -1) {
-            myLibrary.splice(index, 1);
-        }
-        bookCard.remove();
-
-        if (myLibrary.length === 0) {
-            displayBook();
-        }
-    });
-
-    bookCard.appendChild(imgWrapper);
-    bookCard.appendChild(title);
-    bookCard.appendChild(author);
-    bookCard.appendChild(pages);
-    bookCard.appendChild(genre);
-    bookCard.appendChild(selectStatus);
-    bookCard.appendChild(deleteBtn);
-
-    return bookCard;
-}
-
-// Display the book card in the library
-function displayBook() {
-    library.textContent = "";
-
-    if(myLibrary.length === 0) {
-        const emptyLibrary = document.createElement("p");
-        emptyLibrary.textContent = "No book in the library. Add your first one!"
-        library.appendChild(emptyLibrary);
-        return;
-    }
-
-    const fragment = document.createDocumentFragment();
-    myLibrary.forEach(book => {
-        fragment.appendChild(buildBookCard(book));
-    });
-    library.appendChild(fragment);
-}
 
 newBookBtn.addEventListener("click", () => { 
     dialog.showModal(); 
@@ -163,15 +159,14 @@ form.addEventListener("submit", (e) => {
         return;
     }
 
-    addBookToLibrary(title, author, pages, genre, status, imageUrl, imageFile);
+    const book = new Book(title, author, pages, genre, status, imageUrl, imageFile);
+    myLibrary.addBook(book);
 
     form.reset();
     dialog.close();
-    displayBook();
 });
 
 // Test with data
-addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", "Read", "", "");
-addBookToLibrary("1984", "George Orwell", 328, "Dystopian", "Not Read", "", "");
-addBookToLibrary("Never Let Me Go", "Kazuo Ishiguro", 288, "Science-Fiction, Dystopian", "Read", "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1353048590i/6334.jpg", "");
-displayBook();
+myLibrary.addBook(new Book("The Hobbit", "J.R.R. Tolkien", 310, "Fantasy", "Read", "", ""));
+myLibrary.addBook(new Book("1984", "George Orwell", 328, "Dystopian", "Not Read", "", ""));
+myLibrary.addBook(new Book("Never Let Me Go", "Kazuo Ishiguro", 288, "Science-Fiction, Dystopian", "Read", "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1353048590i/6334.jpg", ""));
