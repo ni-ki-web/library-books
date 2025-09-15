@@ -173,6 +173,12 @@ dialog::backdrop {
   gap: 0.5rem;
 }
 
+#bookForm span {
+  color: red;
+  margin-left: -0.3rem;
+  font-size: 0.9rem;
+}
+
 #bookForm input, #bookForm select {
   width: 100%;
   padding: 0.4rem;
